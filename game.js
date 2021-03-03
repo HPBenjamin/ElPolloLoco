@@ -5,8 +5,8 @@ let charcter_y = 200;
 let isMovingLeft = false;
 let isMovingRight = false;
 let bg_elements = 0;
-let lastJumpStarted = 0;
-
+let isJumping = false;
+let isFalling = false;
 
 // -----------------Game config
 let Jump_Time = 1000;
@@ -32,12 +32,19 @@ function updateCharacter() {
     let base_image = new Image();
     base_image.src = '/Users/benjamintischoff/Desktop/Developer Arbeiten/Modul11/Mexicano - Sprites/2.Secuencias_Personaje-Pepe-corrección/1.IDLE/IDLE/I-1.png';
 
-    let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
-    if (timePassedSinceJump < Jump_Time) {
-        charcter_y = charcter_y - 8;
-    } else {
-        if (charcter_y < 200) {
-            charcter_y = charcter_y + 8;
+    if (isJumping) {
+        charcter_y = charcter_y - 10;
+
+        if (charcter_y < 120) {
+            isFalling = true;
+            isJumping = false;
+        }
+    }
+
+    if (isFalling) {
+        charcter_y = charcter_y + 10;
+        if (charcter_y > 200) {
+            isFalling = false;
         }
     }
 
@@ -85,10 +92,8 @@ function listenForKeys() {
             character_x = character_x - 5;
         }
 
-        let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
-        
-        if (e.code == 'Space' && timePassedSinceJump > Jump_Time) {
-            lastJumpStarted = new Date().getTime;
+        if (e.code == 'Space' && !isFalling) {
+            isJumping = true;
         }
     });
 
@@ -104,9 +109,9 @@ function listenForKeys() {
             character_x = character_x - 5;
         }
 
-        /*    if (e.code == 'Space') {
-                isJumping = false;
-            }*/
+        if (e.code == 'Space') {
+            isJumping = false;
+        }
     });
 
 }
