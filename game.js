@@ -1,15 +1,15 @@
 let canvas;
 let ctx;
 let character_x = 0;
-let charcter_y = 200;
+let character_y = 200;
 let isMovingLeft = false;
 let isMovingRight = false;
 let bg_elements = 0;
-let isJumping = false;
-let isFalling = false;
+let lastJumpstarted = 0;
+
 
 // -----------------Game config
-let Jump_Time = 1000;
+let JUMP_TIME = 300;
 
 
 
@@ -32,24 +32,17 @@ function updateCharacter() {
     let base_image = new Image();
     base_image.src = '/Users/benjamintischoff/Desktop/Developer Arbeiten/Modul11/Mexicano - Sprites/2.Secuencias_Personaje-Pepe-corrección/1.IDLE/IDLE/I-1.png';
 
-    if (isJumping) {
-        charcter_y = charcter_y - 10;
-
-        if (charcter_y < 120) {
-            isFalling = true;
-            isJumping = false;
-        }
-    }
-
-    if (isFalling) {
-        charcter_y = charcter_y + 10;
-        if (charcter_y > 200) {
-            isFalling = false;
+    let timePassedSinceJump = new Date().getTime() - lastJumpstarted;
+    if (timePassedSinceJump < JUMP_TIME) {
+        character_y = character_y - 10;
+    } else {
+        if (character_y < 200) {
+            character_y = character_y + 10;
         }
     }
 
     if (base_image.complete) {
-        ctx.drawImage(base_image, character_x, charcter_y, base_image.width * 0.25, base_image.height * 0.25);
+        ctx.drawImage(base_image, character_x, character_y, base_image.width * 0.25, base_image.height * 0.25);
     }
 }
 
@@ -92,10 +85,12 @@ function listenForKeys() {
             character_x = character_x - 5;
         }
 
-        if (e.code == 'Space' && !isFalling) {
-            isJumping = true;
+        let timePassedSinceJump = new Date().getTime() - lastJumpstarted;
+        if(e.code == 'Space' && timePassedSinceJump > JUMP_TIME * 2) {
+            lastJumpstarted = new Date().getTime();
         }
     });
+
 
     document.addEventListener("keyup", e => {
         const k = e.key;
@@ -109,9 +104,9 @@ function listenForKeys() {
             character_x = character_x - 5;
         }
 
-        if (e.code == 'Space') {
-            isJumping = false;
-        }
+        /*   if (e.code == 'Space') {
+               isJumping = false;
+           }  */
     });
 
 }
